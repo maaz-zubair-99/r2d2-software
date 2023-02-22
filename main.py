@@ -1,8 +1,8 @@
 from approxeng.input.selectbinder import ControllerResource
 from time import sleep
 import turtle
-acc = 1
-rev_acc = 3
+acc = .6
+rev_acc = 10
 max_v = 200
 vel = 0
 while True:
@@ -16,8 +16,10 @@ while True:
                     vel=min(vel+acc,max_v)
                 if joystick.l2 is not None and joystick.r2 is None:
                     vel=max(vel-rev_acc,0)
+                if joystick.cross is not None:
+                    turtle.clear()
                 turtle.forward(vel)
-                vel*=0.97
+                vel*=0.9
                 turtle.right(joystick['lx']*15)
                 # ....
         # Joystick disconnected...
