@@ -11,12 +11,13 @@ while True:
             print('Found a joystick and connected')
             while joystick.connected:
                 # Do stuff with your joystick here!
+                
                 if joystick.r2 is not None and joystick.l2 is None:
                     vel=min(vel+acc,max_v)
                 if joystick.l2 is not None and joystick.r2 is None:
                     vel=max(vel-rev_acc,0)
                 turtle.forward(vel)
-                vel*=0.9
+                vel*=0.97
                 turtle.right(joystick['lx']*15)
                 # ....
         # Joystick disconnected...
