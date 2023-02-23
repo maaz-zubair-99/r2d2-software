@@ -1,6 +1,9 @@
 from approxeng.input.selectbinder import ControllerResource
 from time import sleep
 import turtle
+import pygame
+pygame.mixer.init()
+sound = pygame.mixer.Sound('screaming.wav')
 acc = .6
 rev_acc = 10
 max_v = 200
@@ -18,6 +21,8 @@ while True:
                     vel=max(vel-rev_acc,0)
                 if joystick.cross is not None:
                     turtle.clear()
+                if joystick.dup is not None:
+                    sound.play()
                 turtle.forward(vel)
                 vel*=0.9
                 turtle.right(joystick['lx']*15)
