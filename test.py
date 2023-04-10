@@ -2,23 +2,35 @@ import gpiozero
 import time
 """
 good pins:
-
-5
+2
+3
+20
+21
 26
-25
-23
 """
-pin1 = gpiozero.DigitalOutputDevice(17)
-pin2 = gpiozero.DigitalOutputDevice(23)
-pin3= gpiozero.DigitalOutputDevice(25)
-pin4 = gpiozero.DigitalOutputDevice(5)
-def writePins(a,b,c,d):
-    pin1.value=a
-    pin2.value=b
-    pin3.value=c
-    pin4.value=d
+
+"""
+drive control
+m1
+2
+3
+m2
+20
+21                                   
+"""
+
+"""
+reserved for stepper:
+5
+17
+23
+25
+"""
+
+
 while True:
-    writePins(1,1,1,1)
+    pinToTest = gpiozero.DigitalOutputDevice(int(input("pin num: ")))
+    pinToTest.on()
     time.sleep(1)
-    writePins(0,0,0,0)
+    pinToTest.off()
     time.sleep(1)
