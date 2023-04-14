@@ -48,37 +48,24 @@ class StepperMotor():
             self.setStep(1, 0, 1, 0)
             sleep(StepperMotor.step_delay)
             i += 1
-def forward():
-
-    i = 0
-    while i in range(0, step_steps):
-        setStep(1, 0, 1, 0)
-        sleep(step_delay)
-        setStep(0, 1, 1, 0)
-        sleep(step_delay)
-        setStep(0, 1, 0, 1)
-        sleep(step_delay)
-        setStep(1, 0, 0, 1)
-        sleep(step_delay)
-        i += 1
-def backward():
-    i = 0
-    while i in range(0, step_steps):
-        setStep(1, 0, 0, 1)
-        sleep(step_delay)
-        setStep(0, 1, 0, 1)
-        sleep(step_delay)
-        setStep(0, 1, 1, 0)
-        sleep(step_delay)
-        setStep(1, 0, 1, 0)
-        sleep(step_delay)
-        i += 1
-
-def setStep(w1, w2, w3, w4):
-    pin1.value = w1
-    pin2.value = w2
-    pin3.value = w3
-    pin4.value = w4
+class DriveMotors():
+    def __init__(self,m1,m2,pwm1,pwm2):
+        self.m1 = m1
+        self.m2 = m2
+        self.pwm1 = gpiozero.PWMOutputDevice(pwm1)
+        self.pwm2 = gpiozero.PWMOutputDevice(pwm2)
+        self.p1 = [gpiozero.DigitalOutputDevice(m1[0]),gpiozero.DigitalOutputDevice(m1[1])]
+        self.p2 = [gpiozero.DigitalOutputDevice(m2[0]),gpiozero.DigitalOutputDevice(m2[1])]
+    def writeMotors(self,d1,d2,s1,s2):
+        # print(max(0+d1,0),max(0-d1,0),max(0+d2,0),max(0-d2,0))
+        self.pwm1.value = s1
+        self.pwm2.value = s2
+        self.p1[0].value = max(0+d1,0)
+        self.p1[1].value = max(0-d1,0)
+        self.p2[0].value = max(0+d2,0)
+        self.p2[1].value = max(0-d2,0)
+    
+        
 
 running = True
 
@@ -91,7 +78,11 @@ def handleStepper(joystick=None):
         if joystick['rx'] <=  -0.9:
             stepper.backward()
         sleep(1/30)
-
+def handleDrive(joystick = None):
+    motors = DriveMotors((2,3),(20,21),18,13)
+    while running:
+        print((vel/max_v)*30)
+        motors.writeMotors(1,1,min(1,1+joystick["lx"])*(vel/max_v)*30,min(1,1-joystick["lx"])*(vel/max_v)*30)
 pygame.mixer.init()
 sound = pygame.mixer.Sound('screaming.wav')
 acc = .6
@@ -105,6 +96,8 @@ while True:
             print('Found a joystick and connected')
             stepper_thread = threading.Thread(target=handleStepper,kwargs={"joystick":joystick},name="joystick_thread")
             stepper_thread.start()
+            drive_thread = threading.Thread(target=handleDrive,kwargs={"joystick":joystick},name="drive_thread")
+            drive_thread.start()
             while joystick.connected:
                 # Do stuff with your joystick here!
                 
@@ -119,6 +112,7 @@ while True:
                 if joystick.ddown is not None:
                     running = False
                     stepper_thread.join()
+                    drive_thread.join()
                     sys.exit("Program ended")
                 turtle.forward(vel)
                 vel*=0.9
