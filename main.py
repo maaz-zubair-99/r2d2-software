@@ -71,7 +71,7 @@ running = True
 
 def handleStepper(joystick=None):
     print(joystick)
-    stepper = StepperMotor(17,23,25,5)
+    stepper = StepperMotor(17,23,25,6 )
     while running:
         if joystick['rx']  >= 0.9:
             stepper.forward()
@@ -81,8 +81,13 @@ def handleStepper(joystick=None):
 def handleDrive(joystick = None):
     motors = DriveMotors((2,3),(20,21),18,13)
     while running:
-        print((vel/max_v)*30)
-        motors.writeMotors(1,1,min(1,1+joystick["lx"])*(vel/max_v)*30,min(1,1-joystick["lx"])*(vel/max_v)*30)
+        
+        
+        # print(joystick['lx'])
+        leftPower = min([1,(1+joystick["lx"])*(vel)])
+        rightPower = min([1,(1-joystick["lx"])*(vel)])
+        # print(leftPower,rightPower)
+        motors.writeMotors(1,1,leftPower,rightPower)
 pygame.mixer.init()
 sound = pygame.mixer.Sound('screaming.wav')
 acc = .6
